@@ -3,18 +3,18 @@ package user
 import (
 	"fmt"
 	"net/http"
-	"trial-go-stacktrace/internal/errors"
+	"trial-go-stacktrace/internal/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
 func GetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		logger.Info("auth/get")
 		err := get(c)
 		if err != nil {
 			//ログ出力
-			fmt.Println(errors.StackTrace(err))
-			//logger.Warn(err.Error())
+			logger.Error(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": fmt.Sprintln(err),
 			})

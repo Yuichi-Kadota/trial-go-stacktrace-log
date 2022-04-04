@@ -1,36 +1,31 @@
 package logger
 
 import (
-	"trial-go-stacktrace/internal/errors"
+	"time"
 
-	"go.uber.org/zap"
+	pe "github.com/pkg/errors"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 )
 
-var logger *zap.Logger
-
 func init() {
-	SetDebugMode(true)
+	zerolog.TimeFieldFormat = time.RFC3339Nano
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 }
 
-func SetDebugMode(isDebug bool) {
-	if isDebug {
-		config := zap.NewDevelopmentConfig()
-		logger, _ = config.Build(zap.AddCallerSkip(1))
-	} else {
-		// 構造化ログとして出力される
-		config := zap.NewProductionConfig()
-		logger, _ = config.Build(zap.AddCallerSkip(1))
-	}
-	defer logger.Sync()
+func Info(msg string) {
+	log.Info().Msg(msg)
 }
 
-// zapのスタックトレースだと、loggerを呼び出したhandler.goのスタックしか表示されない
-func Warn(msg string, fields ...zap.Field) {
-	logger.Warn(msg, fields...)
+func Warn(msg string) {
+	log.Warn().Msg(msg)
 }
 
-// zapのスタックトレースだとエラー発生箇所のstackが取得できない？ので明示的にstacktraceを追加する
-func WarnErr(err error) {
-	st := errors.StackTrace(err)
-	logger.Warn(err.Error(), zap.String("Stack", st))
+// stacktrace付きでエラーを出力する
+func Error(err error) {
+	// pkg/errorsのstacktraceを持ったerrにUnwrapする
+	log.Error().Stack().Err(pe.Unwrap(err)).Msg(err.Error())
 }
