@@ -2,6 +2,11 @@ package user
 
 import "github.com/gin-gonic/gin"
 
-func Get(c *gin.Context) {
-
+func get(c *gin.Context) error {
+	r := NewUserRepo()
+	err := r.GetUser()
+	if err != nil {
+		return err
+	}
+	return nil
 }

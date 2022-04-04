@@ -9,5 +9,5 @@ import (
 func main() {
 	engine := gin.Default()
 	engine.GET("/user", user.GetHandler())
-	engine.Run(":3000")
+	engine.Run(":8088")
 }
