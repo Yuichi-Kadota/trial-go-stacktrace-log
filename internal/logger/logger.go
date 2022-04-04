@@ -1,6 +1,10 @@
 package logger
 
-import "go.uber.org/zap"
+import (
+	"trial-go-stacktrace/internal/errors"
+
+	"go.uber.org/zap"
+)
 
 var logger *zap.Logger
 
@@ -20,22 +24,13 @@ func SetDebugMode(isDebug bool) {
 	defer logger.Sync()
 }
 
-// Debug Wrapper Function
-func Debug(msg string, fields ...zap.Field) {
-	logger.Debug(msg, fields...)
-}
-
-// Info Wrapper Function
-func Info(msg string, fields ...zap.Field) {
-	logger.Info(msg, fields...)
-}
-
-// Warn Wrapper Function
+// zapのスタックトレースだと、loggerを呼び出したhandler.goのスタックしか表示されない
 func Warn(msg string, fields ...zap.Field) {
 	logger.Warn(msg, fields...)
 }
 
-// Fatal Wrapper Function
-func Fatal(msg string, fields ...zap.Field) {
-	logger.Fatal(msg, fields...)
+// zapのスタックトレースだとエラー発生箇所のstackが取得できない？ので明示的にstacktraceを追加する
+func WarnErr(err error) {
+	st := errors.StackTrace(err)
+	logger.Warn(err.Error(), zap.String("Stack", st))
 }
