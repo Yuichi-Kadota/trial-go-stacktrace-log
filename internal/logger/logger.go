@@ -17,6 +17,7 @@ func SetDebugMode(isDebug bool) {
 		config := zap.NewProductionConfig()
 		logger, _ = config.Build(zap.AddCallerSkip(1))
 	}
+	defer logger.Sync()
 }
 
 // Debug Wrapper Function
