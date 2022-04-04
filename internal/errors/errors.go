@@ -40,3 +40,11 @@ func Code(err error) codes.Code {
 	}
 	return codes.Unknown
 }
+
+func StackTrace(err error) string {
+	var e privateError
+	if errors.As(err, &e) {
+		return fmt.Sprintf("%+v\n", e.err)
+	}
+	return ""
+}
